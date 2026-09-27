@@ -1,3 +1,21 @@
+golang-golang-x-sys (0.0~git20210124.22da62e-1danos2) unstable; urgency=medium
+
+  * Add 05-accept-current-stdlib-ErrDot-wording-in-TestLookPath.patch:
+    TestLookPath hard-codes execabs's own pre-Go-1.19 error string for a
+    relative-path executable found via "." in PATH; Go 1.19+'s os/exec
+    implements this same check itself now and reports it with different
+    wording. Accept either string -- the behavior under test is unchanged.
+  * Add 06-tolerate-MSG_CMSG_CLOEXEC-in-TestSCMCredentials.patch:
+    TestSCMCredentials fails in this build sandbox because ReadMsgUnix's
+    flags carry MSG_CMSG_CLOEXEC even though no file descriptors were sent
+    (only SCM_CREDENTIALS bytes) -- a build-environment kernel/runtime
+    detail this package does not control, same rationale as the existing
+    03-skip-TestOpenByHandleAt-if-openMountByID-fails.patch.
+  * Both were blocking the Debian 13 (Debian:13/standard) OBS build:
+    "dh_auto_test: error: ... go test ... returned exit code 1".
+
+ -- DANOS <noreply@danos.io>  Mon, 28 Sep 2026 07:00:00 +0800
+
 golang-golang-x-sys (0.0~git20210124.22da62e-1danos1) unstable; urgency=medium
 
   * debian: enable build on Debian 10 and 11

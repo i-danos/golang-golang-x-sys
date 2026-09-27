@@ -1,3 +1,5 @@
 02-allow-dev-random-minor-minor-mismatch-in-TestDevices.patch
 03-skip-TestOpenByHandleAt-if-openMountByID-fails.patch
 04-add-linux-ppc-support-for-use-with-gccgo.patch
+05-accept-current-stdlib-ErrDot-wording-in-TestLookPath.patch
+06-tolerate-MSG_CMSG_CLOEXEC-in-TestSCMCredentials.patch

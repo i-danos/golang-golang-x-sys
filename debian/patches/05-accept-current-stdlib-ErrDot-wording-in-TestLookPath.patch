@@ -1,0 +1,35 @@
+Description: Accept the current Go stdlib wording for the relative-path LookPath error
+ execabs backports os/exec's protection against resolving a command to a
+ relative-path executable in the current directory, for Go versions that
+ did not yet have it built in. Since Go 1.19, os/exec itself implements
+ this check and returns its own wrapped exec.ErrDot error text
+ ("exec: %q: cannot run executable found relative to current directory")
+ instead of the older, execabs-specific wording this test hard-codes
+ ("%s resolves to executable in current directory (%s)"). The behavior
+ under test -- LookPath refuses to resolve to a relative-path executable
+ found via "." in PATH -- is unchanged; only the error string moved into
+ the standard library. Accept either wording so the test still exercises
+ that behavior on a modern Go toolchain instead of failing on a stale
+ exact-string comparison.
+Author: DANOS <noreply@danos.io>
+Origin: vendor
+Forwarded: not-needed
+Last-Update: 2026-09-28
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/execabs/execabs_test.go
++++ b/execabs/execabs_test.go
+@@ -124,9 +124,12 @@
+ 		os.Setenv("PATH", fmt.Sprintf(".:%s", origPath))
+ 	}
+ 	expectedErr := fmt.Sprintf("execabs-test resolves to executable in current directory (.%c%s)", filepath.Separator, executable)
++	// Go >= 1.19's own os/exec implements this check and reports it with its
++	// own wording; accept that too (see patch header).
++	stdlibErr := fmt.Sprintf("exec: %q: cannot run executable found relative to current directory", "execabs-test")
+ 	if _, err := LookPath("execabs-test"); err == nil {
+ 		t.Fatalf("LookPath didn't fail when finding a non-relative path")
+-	} else if err.Error() != expectedErr {
++	} else if err.Error() != expectedErr && err.Error() != stdlibErr {
+ 		t.Errorf("LookPath returned unexpected error: want %q, got %q", expectedErr, err.Error())
+ 	}
+ }
